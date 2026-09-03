@@ -22,7 +22,7 @@ export function App() {
   return (
     <main className="workspace">
       <header className="workspace__header">
-        <span className="eyebrow">AUTONEX / EDITOR</span>
+        <span className="eyebrow">STITCH_ / EDITOR</span>
         <h1>Build something clear.</h1>
         <p>Small tools, sharp edges, zero ceremony.</p>
       </header>
@@ -76,8 +76,8 @@ function App() {
   return (
     <div className="app-shell">
       <header className="titlebar">
-        <div className="brand"><span className="brand-mark">A</span><span>Autonex</span></div>
-        <div className="breadcrumbs"><span>autonex</span><span>/</span><strong>{activeFile}</strong></div>
+        <div className="brand"><span className="brand-mark">S</span><span>stitch_</span></div>
+        <div className="breadcrumbs"><span>stitch_</span><span>/</span><strong>{activeFile}</strong></div>
         <div className="title-actions"><button title="Command palette" onClick={() => setPaletteOpen(true)}><Icon>⌘</Icon></button><button title="More actions"><Icon>•••</Icon></button><span className="avatar">N</span></div>
       </header>
 
@@ -93,7 +93,7 @@ function App() {
 
         <aside className="explorer">
           <div className="pane-heading"><span>{activeTool.toUpperCase()}</span><button title="New file"><Icon>＋</Icon></button></div>
-          {activeTool === 'Explorer' ? <><button className="workspace-name" onClick={() => setExpanded((items) => items.includes('root') ? items.filter((item) => item !== 'root') : [...items, 'root'])}><Icon>{expanded.includes('root') ? '⌄' : '›'}</Icon> AUTONEX</button>
+          {activeTool === 'Explorer' ? <><button className="workspace-name" onClick={() => setExpanded((items) => items.includes('root') ? items.filter((item) => item !== 'root') : [...items, 'root'])}><Icon>{expanded.includes('root') ? '⌄' : '›'}</Icon> STITCH_</button>
           {expanded.includes('root') && <div className="tree">
             {files.map((file) => <button key={file.name} className={`tree-row ${activeFile === file.name ? 'selected' : ''} ${file.type}`} onClick={() => file.type === 'file' ? selectFile(file.name) : setExpanded((items) => items.includes(file.name) ? items.filter((item) => item !== file.name) : [...items, file.name])}><Icon>{file.type === 'folder' ? expanded.includes(file.name) ? '▾' : '▸' : file.language === 'TSX' ? '◈' : file.language === 'CSS' ? '#' : file.language === 'JSON' ? '{}' : 'M'}</Icon><span>{file.name}</span>{file.name === 'App.tsx' && <span className="dot" />}</button>)}
           </div>}</> : <div className="tool-empty"><strong>{activeTool}</strong><p>{activeTool === 'Search' ? 'Search across your workspace' : 'Nothing to show yet'}</p></div>}
@@ -108,7 +108,7 @@ function App() {
             <textarea aria-label="Code editor" spellCheck={false} value={code} onChange={(event) => { setCode(event.target.value); setSaved(false) }} />
             <div className="minimap">{code.split('\\n').slice(0, 22).map((line, index) => <i key={index} style={{ width: `${Math.max(12, Math.min(92, line.length * 2.1))}%` }} />)}</div>
           </section>
-          <div className={`bottom-panel ${panelOpen ? 'open' : 'closed'}`}><div className="panel-tabs"><button className="active">PROBLEMS <span>0</span></button><button>OUTPUT</button><button>TERMINAL</button><button>DEBUG CONSOLE</button><div className="panel-controls"><span>zsh</span><button onClick={() => setPanelOpen(!panelOpen)} title="Toggle panel">{panelOpen ? '⌄' : '⌃'}</button></div></div>{panelOpen && <div className="terminal-content"><span className="prompt">~/autonex</span><span className="command">$ npm run dev</span><p>ready - local editor session active</p></div>}</div>
+          <div className={`bottom-panel ${panelOpen ? 'open' : 'closed'}`}><div className="panel-tabs"><button className="active">PROBLEMS <span>0</span></button><button>OUTPUT</button><button>TERMINAL</button><button>DEBUG CONSOLE</button><div className="panel-controls"><span>zsh</span><button onClick={() => setPanelOpen(!panelOpen)} title="Toggle panel">{panelOpen ? '⌄' : '⌃'}</button></div></div>{panelOpen && <div className="terminal-content"><span className="prompt">~/stitch_</span><span className="command">$ npm run dev</span><p>ready - local editor session active</p></div>}</div>
         </main>
       </div>
       <footer className="statusbar"><span>⑂ main*</span><span>↻ 0</span><span className="status-spacer" /><span>Ln {code.split('\\n').length}, Col 1</span><span>Spaces: 2</span><span>UTF-8</span><span>TSX</span><span className="live">● Ready</span></footer>

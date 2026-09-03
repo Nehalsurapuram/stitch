@@ -1,5 +1,5 @@
 interface Window {
-  autonex: {
+  stitch_: {
     version: string
   }
 }
