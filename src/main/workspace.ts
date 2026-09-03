@@ -1,6 +1,6 @@
 import { readdir, readFile, writeFile, stat, mkdir, rm } from 'node:fs/promises'
 import { join, relative, resolve, sep, basename, isAbsolute } from 'node:path'
-import chokidar, { type FSWatcher } from 'chokidar'
+import type { FSWatcher } from 'chokidar'
 import type { DirEntry, FileContent, SaveResult, WatchEvent, Workspace } from '../shared/types'
 import { IpcError } from '../shared/types'
 import { currentBranch, isGitRepo } from './git'
@@ -130,9 +130,11 @@ export async function listAllFiles(limit = 4000): Promise<string[]> {
   return found
 }
 
-export function watchWorkspace(onEvent: (event: WatchEvent) => void): void {
-  void stopWatching()
-  watcher = chokidar.watch(getRoot(), {
+export async function watchWorkspace(onEvent: (event: WatchEvent) => void): Promise<void> {
+  await stopWatching()
+  // chokidar 5 is ESM-only, so it cannot be required from the CJS main bundle.
+  const { watch: chokidarWatch } = await import('chokidar')
+  watcher = chokidarWatch(getRoot(), {
     ignoreInitial: true,
     ignored: (path: string) => path.split(sep).some((segment) => IGNORED.has(segment))
   })

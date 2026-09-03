@@ -93,7 +93,7 @@ export function registerIpc(): void {
 async function openFolder(path: string, send: Sender): Promise<unknown> {
   await stopWatching()
   const workspace = await openWorkspace(path)
-  watchWorkspace((event) => send('fs:event', event))
+  await watchWorkspace((event) => send('fs:event', event))
   await detectors.startLogTail()
   send('workspace:changed', workspace)
   return workspace
