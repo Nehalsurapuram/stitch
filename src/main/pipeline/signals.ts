@@ -84,7 +84,9 @@ export function signatureOf(detector: DetectorKind, headline: string, frames: St
   const stable = headline
     .replace(/\d{4}-\d{2}-\d{2}[T ][\d:.]+Z?/g, '<time>')
     .replace(/0x[0-9a-f]+/gi, '<addr>')
-    .replace(/\b\d{3,}\b/g, '<n>')
+    // Volatile numbers (durations, ports, pids) but not identifier suffixes -
+    // "TS2322" must stay distinct from "TS2345", while "1234ms" must not.
+    .replace(/(?<![A-Za-z0-9])\d{3,}/g, '<n>')
     .replace(/[A-Za-z]:[\\/][^\s:]+/g, '<path>')
     .toLowerCase()
   const location = frames[0] ? `${frames[0].file}:${frames[0].line ?? ''}` : ''
