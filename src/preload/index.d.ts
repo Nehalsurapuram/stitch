@@ -1,5 +1,9 @@
-interface Window {
-  stitch_: {
-    version: string
+import type { AutonexApi } from './index'
+
+declare global {
+  interface Window {
+    autonex: AutonexApi
   }
 }
+
+export {}

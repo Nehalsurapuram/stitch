@@ -23,10 +23,12 @@
     "vite": "^7.3.6"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.123.0",
     "chokidar": "^5.0.0",
     "monaco-editor": "^0.56.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "zod": "^4.5.4",
     "zustand": "^5.0.15"
   }
 }
