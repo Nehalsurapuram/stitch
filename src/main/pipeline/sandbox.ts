@@ -1,4 +1,4 @@
-import { mkdtemp, writeFile, mkdir, rm, cp, access } from 'node:fs/promises'
+import { mkdtemp, writeFile, mkdir, rm, cp, access, lstat, unlink, symlink } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, dirname, resolve, relative, isAbsolute } from 'node:path'
 import type { FileEdit, ValidationResult, ValidationStep } from '../../shared/types'
@@ -39,6 +39,19 @@ async function exists(path: string): Promise<boolean> {
 }
 
 /**
+ * Remove a path only if it is a symlink/junction, never if it is a real
+ * directory. Used to detach the borrowed node_modules before teardown.
+ */
+async function unlinkIfLink(path: string): Promise<void> {
+  try {
+    const info = await lstat(path)
+    if (info.isSymbolicLink()) await unlink(path)
+  } catch {
+    /* not present, nothing to detach */
+  }
+}
+
+/**
  * Dependencies are not in git, so a fresh worktree has no node_modules and
  * every verify step would fail on "command not found". Link the real one in.
  */
@@ -46,10 +59,11 @@ async function linkDependencies(root: string, sandbox: string): Promise<string |
   const source = join(root, 'node_modules')
   if (!(await exists(source))) return null
   const target = join(sandbox, 'node_modules')
+  // A repo that tracks its dependencies already has them in the worktree.
+  if (await exists(target)) return null
   try {
     // A junction is instant and needs no elevation on Windows; symlink dir
     // is the equivalent elsewhere.
-    const { symlink } = await import('node:fs/promises')
     await symlink(source, target, process.platform === 'win32' ? 'junction' : 'dir')
     return 'linked node_modules from the workspace'
   } catch {
@@ -189,6 +203,10 @@ export async function validatePatch(
 
     return { ok, steps, sandboxPath: sandbox, baseCommit: base, durationMs: Date.now() - startedAt }
   } finally {
+    // Drop the node_modules link FIRST. It points at the user's real
+    // dependencies, and nothing in the teardown path may be given the chance
+    // to descend through it.
+    await unlinkIfLink(join(sandbox, 'node_modules'))
     // The sandbox is disposable by design; never leave one behind.
     await removeWorktree(root, sandbox)
     await rm(sandbox, { recursive: true, force: true }).catch(() => {})
