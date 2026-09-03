@@ -1,4 +1,4 @@
-import { StrictMode, useState } from 'react'
+import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles.css'
 
@@ -44,6 +44,28 @@ function App() {
   const [panelOpen, setPanelOpen] = useState(true)
   const [paletteOpen, setPaletteOpen] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [activeTool, setActiveTool] = useState('Explorer')
+  const [expanded, setExpanded] = useState<string[]>(['src'])
+
+  useEffect(() => {
+    function handleShortcut(event: KeyboardEvent) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+        event.preventDefault()
+        setSaved(true)
+      }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'j') {
+        event.preventDefault()
+        setPanelOpen((open) => !open)
+      }
+      if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key.toLowerCase() === 'p') {
+        event.preventDefault()
+        setPaletteOpen(true)
+      }
+      if (event.key === 'Escape') setPaletteOpen(false)
+    }
+    window.addEventListener('keydown', handleShortcut)
+    return () => window.removeEventListener('keydown', handleShortcut)
+  }, [])
 
   function selectFile(name: string) {
     setActiveFile(name)
@@ -61,21 +83,21 @@ function App() {
 
       <div className="body-grid">
         <aside className="activitybar">
-          <button className="activity active" title="Explorer"><Icon>▤</Icon></button>
-          <button className="activity" title="Search"><Icon>⌕</Icon></button>
-          <button className="activity" title="Source control"><Icon>⑂</Icon><span className="badge">2</span></button>
-          <button className="activity" title="Extensions"><Icon>⊞</Icon></button>
+          <button className={`activity ${activeTool === 'Explorer' ? 'active' : ''}`} title="Explorer" onClick={() => setActiveTool('Explorer')}><Icon>▤</Icon></button>
+          <button className={`activity ${activeTool === 'Search' ? 'active' : ''}`} title="Search" onClick={() => setActiveTool('Search')}><Icon>⌕</Icon></button>
+          <button className={`activity ${activeTool === 'Source Control' ? 'active' : ''}`} title="Source control" onClick={() => setActiveTool('Source Control')}><Icon>⑂</Icon><span className="badge">2</span></button>
+          <button className={`activity ${activeTool === 'Extensions' ? 'active' : ''}`} title="Extensions" onClick={() => setActiveTool('Extensions')}><Icon>⊞</Icon></button>
           <div className="activity-spacer" />
-          <button className="activity" title="Settings"><Icon>⚙</Icon></button>
+          <button className={`activity ${activeTool === 'Settings' ? 'active' : ''}`} title="Settings" onClick={() => setActiveTool('Settings')}><Icon>⚙</Icon></button>
         </aside>
 
         <aside className="explorer">
-          <div className="pane-heading"><span>EXPLORER</span><button title="New file"><Icon>＋</Icon></button></div>
-          <div className="workspace-name"><Icon>⌄</Icon> AUTONEX</div>
-          <div className="tree">
-            {files.map((file) => <button key={file.name} className={`tree-row ${activeFile === file.name ? 'selected' : ''} ${file.type}`} onClick={() => file.type === 'file' && selectFile(file.name)}><Icon>{file.type === 'folder' ? '▸' : file.language === 'TSX' ? '◈' : file.language === 'CSS' ? '#' : file.language === 'JSON' ? '{}' : 'M'}</Icon><span>{file.name}</span>{file.name === 'App.tsx' && <span className="dot" />}</button>)}
-          </div>
-          <div className="outline"><div className="pane-heading"><span>OUTLINE</span><Icon>⌄</Icon></div><p>App</p><p>starterCode</p><p>selectFile</p></div>
+          <div className="pane-heading"><span>{activeTool.toUpperCase()}</span><button title="New file"><Icon>＋</Icon></button></div>
+          {activeTool === 'Explorer' ? <><button className="workspace-name" onClick={() => setExpanded((items) => items.includes('root') ? items.filter((item) => item !== 'root') : [...items, 'root'])}><Icon>{expanded.includes('root') ? '⌄' : '›'}</Icon> AUTONEX</button>
+          {expanded.includes('root') && <div className="tree">
+            {files.map((file) => <button key={file.name} className={`tree-row ${activeFile === file.name ? 'selected' : ''} ${file.type}`} onClick={() => file.type === 'file' ? selectFile(file.name) : setExpanded((items) => items.includes(file.name) ? items.filter((item) => item !== file.name) : [...items, file.name])}><Icon>{file.type === 'folder' ? expanded.includes(file.name) ? '▾' : '▸' : file.language === 'TSX' ? '◈' : file.language === 'CSS' ? '#' : file.language === 'JSON' ? '{}' : 'M'}</Icon><span>{file.name}</span>{file.name === 'App.tsx' && <span className="dot" />}</button>)}
+          </div>}</> : <div className="tool-empty"><strong>{activeTool}</strong><p>{activeTool === 'Search' ? 'Search across your workspace' : 'Nothing to show yet'}</p></div>}
+          {activeTool === 'Explorer' && <div className="outline"><div className="pane-heading"><span>OUTLINE</span><Icon>⌄</Icon></div><p>App</p><p>starterCode</p><p>selectFile</p></div>}
         </aside>
 
         <main className="editor-area">
