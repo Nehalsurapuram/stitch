@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Build output
+out/
+dist/
+
+# TypeScript incremental build state
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local environment (the Anthropic API key lives in app settings, not here,
+# but keep this so a stray .env never gets committed)
+.env
+.env.*
+!.env.example
