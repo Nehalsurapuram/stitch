@@ -68,7 +68,7 @@ export function registerIpc(): void {
     detectors.start(channel, command)
   )
   ipcMain.handle('process:stop', (_event, channel: string) => detectors.stop(channel))
-  ipcMain.handle('process:states', () => detectors.states_())
+  ipcMain.handle('process:states', () => detectors.snapshotStates())
   ipcMain.handle('process:diagnostics', () => detectors.runDiagnostics())
 
   /* --- pipeline -------------------------------------------------- */

@@ -29,7 +29,7 @@ class Detectors extends EventEmitter {
   /* Process + crash detectors                                         */
   /* ---------------------------------------------------------------- */
 
-  states_(): ProcessState[] {
+  snapshotStates(): ProcessState[] {
     return [...this.states.values()]
   }
 
@@ -62,7 +62,7 @@ class Detectors extends EventEmitter {
     }
     this.states.set(channel, state)
     this.emitChunk(channel, 'system', `$ ${command}\n`)
-    this.emit('state', this.states_())
+    this.emit('state', this.snapshotStates())
 
     const capture = (stream: 'stdout' | 'stderr') => (data: Buffer) => {
       const text = data.toString()
@@ -83,7 +83,7 @@ class Detectors extends EventEmitter {
       this.processes.delete(channel)
       this.states.set(channel, { ...state, running: false, pid: null, exitCode: code })
       this.emitChunk(channel, 'system', `\nProcess exited with code ${code}\n`)
-      this.emit('state', this.states_())
+      this.emit('state', this.snapshotStates())
 
       if (wasStopping) return
       const settings = getSettings()
