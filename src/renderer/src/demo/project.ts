@@ -50,8 +50,7 @@ export const DEMO_FILES: Record<string, string> = {
     '',
     "console.log('average body length', averageLength(all()))",
     ''
-  ].join('
-'),
+  ].join('\n'),
 
   [DEMO_ROOT + '/src/notes.ts']: [
     'export interface Note {',
