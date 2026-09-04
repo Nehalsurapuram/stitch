@@ -30,9 +30,5 @@
     "react-dom": "^19.2.8",
     "zod": "^4.5.4",
     "zustand": "^5.0.15"
-  },
-  "allowScripts": {
-    "esbuild@0.25.12": true,
-    "esbuild@0.28.2": true
   }
 }
